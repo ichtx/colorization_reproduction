@@ -7,7 +7,7 @@ from IPython import embed
 from .base_color import *
 
 class ECCVGenerator(BaseColor):
-    def __init__(self, norm_layer=nn.BatchNorm2d):
+    def __init__(self, norm_layer=nn.BatchNorm2d, temperature=1.0):
         super(ECCVGenerator, self).__init__()
 
         model1=[nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=True),]
@@ -84,6 +84,8 @@ class ECCVGenerator(BaseColor):
         self.model_out = nn.Conv2d(313, 2, kernel_size=1, padding=0, dilation=1, stride=1, bias=False)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear')
 
+        self.temperature = temperature
+
     def forward(self, input_l):
         conv1_2 = self.model1(self.normalize_l(input_l))
         conv2_2 = self.model2(conv1_2)
@@ -93,12 +95,12 @@ class ECCVGenerator(BaseColor):
         conv6_3 = self.model6(conv5_3)
         conv7_3 = self.model7(conv6_3)
         conv8_3 = self.model8(conv7_3)
-        out_reg = self.model_out(self.softmax(conv8_3))
+        out_reg = self.model_out(self.softmax(conv8_3 / self.temperature))
 
         return self.unnormalize_ab(self.upsample4(out_reg))
 
-def eccv16(pretrained=True):
-	model = ECCVGenerator()
+def eccv16(pretrained=True, temperature=0.38):
+	model = ECCVGenerator(temperature=temperature)
 	if(pretrained):
 		import torch.utils.model_zoo as model_zoo
 		model.load_state_dict(model_zoo.load_url('https://colorizers.s3.us-east-2.amazonaws.com/colorization_release_v2-9b330a0b.pth',map_location='cpu',check_hash=True))
