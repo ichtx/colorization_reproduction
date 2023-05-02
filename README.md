@@ -13,3 +13,6 @@ In colorizers/eccv.py, line 16 `colorizer_eccv16 = eccv16(temperature=0.3).eval(
 We use color2gray.py to transform color images to grayscale images. They are also used in image classification.
 
 The file classification.ipynb perform image classification with VGG16. We test the accuracy with different images sets (original, grayscale, colorized). The top 5 predicted class are generated for each image, and the labels are output to the folder Prediction. Accuracy is calculated using Top-1 class.
+
+### Iconic B&W Images
+In the folder BW_images, it contains 4 black and white images, and their respective colorized images.
